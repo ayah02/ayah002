@@ -1,0 +1,8 @@
+{
+  "name": "Copy of TEDx Al Yamamah University",
+  "description": "A modern, official website for TEDx Al Yamamah University following TED branding guidelines, featuring speaker profiles, event agenda, and Luma registration integration.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
