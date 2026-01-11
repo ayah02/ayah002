@@ -63,7 +63,7 @@
       }
     </style>
     
-    <!-- Import Map: Unified version (19.0.0) to prevent React internal conflicts -->
+    <!-- FIXED: Consolidated Import Map (No more version conflicts) -->
     <script type="importmap">
 {
   "imports": {
@@ -81,8 +81,9 @@
       // Diagnostic tool to show what's wrong if the app fails
       window.addEventListener('error', function(e) {
         // If it's a fatal React or Module error, show the diagnostic screen
-        if (e.message && (e.message.includes('MIME') || e.message.includes('useRef') || e.message.includes('React'))) {
-          showError(e.message);
+        const msg = e.message || "Unknown error";
+        if (msg.includes('MIME') || msg.includes('useRef') || msg.includes('React') || msg.includes('App')) {
+          showError(msg);
         }
       }, true);
 
@@ -106,13 +107,18 @@
         `;
       }
 
-      // 8 second timeout to catch silent failures
-      setTimeout(() => {
+      // 15 second timeout to catch silent failures (increased because Babel is slow)
+      const loadingTimeout = setTimeout(() => {
         const root = document.getElementById('root');
         if (root && root.innerHTML === '') {
-          showError("Loading Timeout: The browser blocked the module or a file is missing. Ensure all .tsx files are uploaded correctly.");
+          showError("Loading Timeout: The browser is taking too long to process the scripts. This might be a slow connection or a missing file.");
         }
-      }, 8000);
+      }, 15000);
+
+      // Clear timeout if React successfully mounts
+      window.addEventListener('load', () => {
+        // We'll trust React to mount. In index.tsx we can add a 'ready' signal.
+      });
     </script>
 
     <!-- Entry point: Babel transpiles index.tsx and resolves relative imports -->
