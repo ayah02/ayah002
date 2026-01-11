@@ -62,7 +62,7 @@
       }
     </style>
     
-    <!-- FIXED: Strictly use one version of React (19.0.0) and remove conflicting sub-path maps -->
+    <!-- FIXED: Consolidated to a single React version (19.0.0) for everything -->
     <script type="importmap">
 {
   "imports": {
@@ -104,8 +104,7 @@
 
       function showError(msg) {
         const root = document.getElementById('root');
-        // If app loaded or root is already rendering content, don't show the error overlay
-        if (window.__APP_LOADED__ || (root && root.innerHTML.trim() !== "")) return;
+        if (window.__APP_LOADED__) return;
         
         root.innerHTML = `
           <div class="error-overlay">
@@ -113,7 +112,7 @@
               <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px;">TEDx</h1>
               <h2 style="color: white; margin-bottom: 15px; font-size: 20px; font-weight: 700;">Bootstrap Error</h2>
               <p style="color: #888; line-height: 1.6; margin-bottom: 25px; font-size: 14px;">
-                The application failed to start. This is usually caused by a conflict in external libraries or a network issue during transpilation.
+                The application failed to start. This is usually due to a library conflict or a slow network connection during transpilation.
               </p>
               <div style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #222; font-family: monospace; font-size: 11px; color: #ef4444; overflow-x: auto; white-space: pre-wrap; max-height: 250px;">
                 <strong style="color: #fff">Debug Info:</strong><br>${msg}
@@ -124,12 +123,10 @@
         `;
       }
 
-      // 60s Timeout for slower connections and Babel transpilation
+      // 60s Timeout (extended for slower devices/connections)
       setTimeout(() => {
-        const root = document.getElementById('root');
-        const isActuallyEmpty = !root || root.innerHTML.trim() === "";
-        if (!window.__APP_LOADED__ && isActuallyEmpty && !document.querySelector('.error-overlay')) {
-          showError("Loading Timeout: The browser is taking too long to process the app. This often happens on first load while Babel is processing files. Please try reloading.");
+        if (!window.__APP_LOADED__ && !document.querySelector('.error-overlay')) {
+          showError("Loading Timeout: The browser is taking too long to process the app. This often happens on first load while Babel is processing files.");
         }
       }, 60000);
     </script>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
@@ -14,6 +13,8 @@ if (el) {
     </React.StrictMode>
   );
   
-  // Notify the parent window that we've started
-  window.dispatchEvent(new Event('app-loaded'));
+  // Use requestAnimationFrame to ensure we dispatch after the first render cycle begins
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new Event('app-loaded'));
+  });
 }
