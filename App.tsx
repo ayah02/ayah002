@@ -1,23 +1,23 @@
 
 import React, { useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { Language } from './types';
-import { DataProvider } from './context/DataContext';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import { Language } from './types.ts';
+import { DataProvider } from './context/DataContext.tsx';
+import Navbar from './components/Navbar.tsx';
+import Footer from './components/Footer.tsx';
 
 // Pages
-import Home from './pages/Home';
-import AboutTEDx from './pages/AboutTEDx';
-import AboutTED from './pages/AboutTED';
-import Speakers from './pages/Speakers';
-import Teams from './pages/Teams';
-import Agenda from './pages/Agenda';
-import Registration from './pages/Registration';
-import LiveStream from './pages/LiveStream';
-import FAQPage from './pages/FAQPage';
-import University from './pages/University';
-import Admin from './pages/Admin';
+import Home from './pages/Home.tsx';
+import AboutTEDx from './pages/AboutTEDx.tsx';
+import AboutTED from './pages/AboutTED.tsx';
+import Speakers from './pages/Speakers.tsx';
+import Teams from './pages/Teams.tsx';
+import Agenda from './pages/Agenda.tsx';
+import Registration from './pages/Registration.tsx';
+import LiveStream from './pages/LiveStream.tsx';
+import FAQPage from './pages/FAQPage.tsx';
+import University from './pages/University.tsx';
+import Admin from './pages/Admin.tsx';
 
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('en');

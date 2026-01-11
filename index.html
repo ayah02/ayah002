@@ -21,7 +21,6 @@
       .bg-ted-red { background-color: #eb0028; }
       .text-ted-red { color: #eb0028; }
       
-      /* Pulse animation for the loading state */
       #root:empty {
         display: flex;
         flex-direction: column;
@@ -42,81 +41,56 @@
         0%, 100% { opacity: 1; transform: scale(1); filter: blur(0px); }
         50% { opacity: 0.3; transform: scale(0.9); filter: blur(2px); }
       }
-
       .error-overlay {
-        position: fixed;
-        inset: 0;
-        background: black;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        z-index: 9999;
+        position: fixed; inset: 0; background: black;
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px; z-index: 9999;
       }
     </style>
     
     <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@19.0.0",
-        "react/": "https://esm.sh/react@19.0.0/",
-        "react-dom": "https://esm.sh/react-dom@19.0.0",
-        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
-        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-        "react-router-dom": "https://esm.sh/react-router-dom@7.1.0?deps=react@19.0.0,react-dom@19.0.0"
-      }
-    }
-    </script>
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react-router-dom": "https://esm.sh/react-router-dom@7.1.0?deps=react@19.0.0,react-dom@19.0.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
 
-    <!-- This script detects if the app fails to load -->
     <script>
       window.addEventListener('error', function(e) {
-        // Safe check for message existence to avoid "Cannot read properties of undefined (reading 'includes')"
-        var msg = e.message || (e.target && (e.target.src || e.target.href)) || "Unknown Error";
-        
-        if (typeof msg === 'string') {
-          // If the error happens during module loading (common for .tsx files locally) or React context issues
-          if (msg.includes('MIME type') || msg.includes('useRef') || msg.includes('index.tsx')) {
-            showError(msg);
-          }
+        var msg = e.message || (e.target && (e.target.src || e.target.href)) || "System Error";
+        if (typeof msg === 'string' && (msg.includes('MIME') || msg.includes('useRef') || msg.includes('index.tsx'))) {
+          showError(msg);
         }
       }, true);
 
       function showError(msg) {
         const root = document.getElementById('root');
         if (!root) return;
-        
         root.innerHTML = `
           <div class="error-overlay">
             <div style="max-width: 500px; text-align: center; font-family: sans-serif;">
               <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin: 0;">TEDx</h1>
               <div style="background: #111; padding: 30px; border-radius: 24px; border: 1px solid #333; margin-top: 20px;">
-                <h2 style="margin-top: 0; color: white;">App Failed to Start</h2>
-                <p style="color: #888; line-height: 1.5; font-size: 14px;">This usually happens because the browser cannot read <b>.tsx</b> files directly from a folder or there is a dependency conflict.</p>
-                <div style="text-align: left; background: #000; padding: 15px; border-radius: 12px; margin: 20px 0;">
-                  <p style="color: #55ff55; margin: 0 0 10px 0; font-weight: bold;">How to fix:</p>
-                  <ol style="color: #bbb; margin: 0; padding-left: 20px; font-size: 13px;">
-                    <li>Ensure you are using a <b>Local Web Server</b> (like VS Code Live Server).</li>
-                    <li>Ensure you have a stable internet connection.</li>
-                    <li>Check if the file <code>index.tsx</code> exists in the same folder.</li>
-                  </ol>
-                </div>
-                <p style="font-size: 10px; color: #444; word-break: break-all;">Technical Detail: ${msg}</p>
+                <h2 style="margin-top: 0; color: white;">Initialization Failed</h2>
+                <p style="color: #888; line-height: 1.5; font-size: 14px;">The browser is unable to load the React modules. Ensure you are using a web server and have an internet connection.</p>
+                <p style="font-size: 10px; color: #444; word-break: break-all; margin-top: 20px;">Error detail: ${msg}</p>
               </div>
             </div>
           </div>
         `;
       }
-
-      // Check for timeout (if pulsing for more than 8 seconds, something is likely blocked)
+      // Increased timeout to 10s for slower connections
       setTimeout(() => {
         const root = document.getElementById('root');
-        if (root && root.innerHTML === '') {
-          showError("Loading timeout: The app is taking too long to initialize. Check console for details.");
-        }
-      }, 8000);
+        if (root && root.innerHTML === '') showError("Loading Timeout: Check console for script errors.");
+      }, 10000);
     </script>
-
     <script type="module" src="./index.tsx"></script>
   </head>
   <body>

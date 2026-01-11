@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Language } from '../types';
-import { useData } from '../context/DataContext';
+import { Language } from '../types.ts';
+import { useData } from '../context/DataContext.tsx';
 
 interface NavbarProps {
   lang: Language;
@@ -27,7 +27,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, toggleLanguage }) => {
   return (
     <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo Section - Matches TEDx YU KHOBAR image style */}
         <Link to="/" className="flex flex-col items-start leading-none group">
           <div className="flex items-baseline gap-1">
             <span className="text-ted-red font-black text-2xl tracking-tighter">TED</span>
@@ -38,7 +37,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, toggleLanguage }) => {
           </span>
         </Link>
 
-        {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <Link
@@ -59,7 +57,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, toggleLanguage }) => {
           </button>
         </div>
 
-        {/* Mobile Toggle */}
         <div className="flex items-center gap-4 md:hidden">
           <button onClick={() => setIsOpen(!isOpen)} className="text-white p-2">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +70,6 @@ const Navbar: React.FC<NavbarProps> = ({ lang, toggleLanguage }) => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-zinc-950 py-8 border-t border-white/5 animate-in slide-in-from-top duration-300">
           <div className="flex flex-col gap-6 px-6 text-center">

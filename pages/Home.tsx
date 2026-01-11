@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import Hero from '../components/Hero';
-import { Language, Speaker, Sponsor } from '../types';
-import { useData } from '../context/DataContext';
+import Hero from '../components/Hero.tsx';
+import { Language, Speaker, Sponsor } from '../types.ts';
+import { useData } from '../context/DataContext.tsx';
 import { Link } from 'react-router-dom';
-import SpeakerModal from '../components/SpeakerModal';
-import PartnerModal from '../components/PartnerModal';
+import SpeakerModal from '../components/SpeakerModal.tsx';
+import PartnerModal from '../components/PartnerModal.tsx';
 
 const Home: React.FC<{ lang: Language }> = ({ lang }) => {
   const { speakers, sponsors, siteSettings } = useData();
@@ -14,7 +14,6 @@ const Home: React.FC<{ lang: Language }> = ({ lang }) => {
   
   return (
     <div>
-      {/* Announcement Banner */}
       {siteSettings.announcement && (siteSettings.announcement.en || siteSettings.announcement.ar) && (
         <div className="bg-ted-red py-3 px-6 text-center animate-in slide-in-from-top duration-700">
           <p className="text-white font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3">
@@ -27,7 +26,6 @@ const Home: React.FC<{ lang: Language }> = ({ lang }) => {
 
       <Hero lang={lang} />
 
-      {/* About Section Preview */}
       <section className="py-24 bg-zinc-950">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
           <div>
@@ -52,7 +50,6 @@ const Home: React.FC<{ lang: Language }> = ({ lang }) => {
         </div>
       </section>
 
-      {/* Speakers Preview */}
       <section className="py-24 bg-black">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-end mb-16">
@@ -88,7 +85,6 @@ const Home: React.FC<{ lang: Language }> = ({ lang }) => {
         </div>
       </section>
 
-      {/* Sponsors Slider */}
       <section className="py-24 border-y border-white/10 bg-zinc-950 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-12 text-center">
           <h2 className="text-sm font-bold uppercase tracking-[0.3em] text-white/40">{lang === 'en' ? 'Our Partners' : 'شركاؤنا'}</h2>
@@ -109,18 +105,6 @@ const Home: React.FC<{ lang: Language }> = ({ lang }) => {
             ))}
           </div>
         </div>
-        <style>{`
-          @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .animate-scroll {
-            animation: scroll 30s linear infinite;
-          }
-          .animate-scroll:hover {
-            animation-play-state: paused;
-          }
-        `}</style>
       </section>
 
       <SpeakerModal 

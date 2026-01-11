@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { SITE_SETTINGS, SPEAKERS, SCHEDULE, SPONSORS, TEAM, FAQ } from '../constants';
-import { SiteSettings, Speaker, ScheduleItem, Sponsor, TeamMember, FAQItem, VolunteerApplication } from '../types';
+import { SITE_SETTINGS, SPEAKERS, SCHEDULE, SPONSORS, TEAM, FAQ } from '../constants.ts';
+import { SiteSettings, Speaker, ScheduleItem, Sponsor, TeamMember, FAQItem, VolunteerApplication } from '../types.ts';
 
 interface DataContextType {
   siteSettings: SiteSettings;
@@ -109,7 +109,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const updated = [...volunteerApplications, newApp];
     setVolunteerApplications(updated);
     localStorage.setItem('tedx_volunteers', JSON.stringify(updated));
-    // Immediately broadcast so admin sees it without full publish
     cmsChannel.postMessage({ type: 'PUBLISH_UPDATE', data: { siteSettings, speakers, schedule, sponsors, team, faqs, volunteerApplications: updated } });
   };
 

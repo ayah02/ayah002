@@ -1,9 +1,9 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from './App.tsx';
 
-console.log("🚀 TEDx Website Loaded Successfully");
+console.log("🚀 TEDx App Mounting...");
 
 const el = document.getElementById('root');
 if (el) {
@@ -13,6 +13,4 @@ if (el) {
       <App />
     </React.StrictMode>
   );
-} else {
-  console.error("Critical Error: Root element not found");
 }
