@@ -5,10 +5,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TEDx Al Yamamah University</title>
+    
+    <!-- Tailwind and Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Babel: The "Magic" that makes .tsx work on GitHub Pages -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
       body {
         font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
@@ -41,11 +47,6 @@
         0%, 100% { opacity: 1; transform: scale(1); filter: blur(0px); }
         50% { opacity: 0.3; transform: scale(0.9); filter: blur(2px); }
       }
-      .error-overlay {
-        position: fixed; inset: 0; background: black;
-        display: flex; align-items: center; justify-content: center;
-        padding: 20px; z-index: 9999;
-      }
     </style>
     
     <script type="importmap">
@@ -61,37 +62,15 @@
 }
 </script>
 
+    <!-- Configure Babel to handle imports and TSX -->
     <script>
-      window.addEventListener('error', function(e) {
-        var msg = e.message || (e.target && (e.target.src || e.target.href)) || "System Error";
-        if (typeof msg === 'string' && (msg.includes('MIME') || msg.includes('useRef') || msg.includes('index.tsx'))) {
-          showError(msg);
-        }
-      }, true);
-
-      function showError(msg) {
-        const root = document.getElementById('root');
-        if (!root) return;
-        root.innerHTML = `
-          <div class="error-overlay">
-            <div style="max-width: 500px; text-align: center; font-family: sans-serif;">
-              <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin: 0;">TEDx</h1>
-              <div style="background: #111; padding: 30px; border-radius: 24px; border: 1px solid #333; margin-top: 20px;">
-                <h2 style="margin-top: 0; color: white;">Initialization Failed</h2>
-                <p style="color: #888; line-height: 1.5; font-size: 14px;">The browser is unable to load the React modules. Ensure you are using a web server and have an internet connection.</p>
-                <p style="font-size: 10px; color: #444; word-break: break-all; margin-top: 20px;">Error detail: ${msg}</p>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      // Increased timeout to 10s for slower connections
-      setTimeout(() => {
-        const root = document.getElementById('root');
-        if (root && root.innerHTML === '') showError("Loading Timeout: Check console for script errors.");
-      }, 10000);
+      babel.registerPreset('env', {
+        targets: { browsers: ['last 2 versions'] }
+      });
     </script>
-    <script type="module" src="./index.tsx"></script>
+
+    <!-- Entry point script -->
+    <script type="text/babel" data-type="module" src="./index.tsx"></script>
   </head>
   <body>
     <div id="root"></div>
