@@ -56,14 +56,14 @@
         padding: 20px; z-index: 9999;
       }
       .error-card {
-        max-width: 500px; width: 100%; background: #111;
+        max-width: 600px; width: 100%; background: #111;
         padding: 40px; border-radius: 32px; border: 1px solid #333;
         text-align: center; font-family: sans-serif;
         box-shadow: 0 25px 50px -12px rgba(235, 0, 40, 0.2);
       }
     </style>
     
-    <!-- STRICT IMPORT MAP: No conflicts allowed -->
+    <!-- FIXED: Consolidated and Strict Import Map -->
     <script type="importmap">
 {
   "imports": {
@@ -80,18 +80,19 @@
     <script>
       let isAppLoaded = false;
 
-      // Watch for the 'app-loaded' signal from index.tsx
-      window.addEventListener('app-loaded', function() {
-        console.log("✅ App loaded signal received.");
+      // Listen for mount signal
+      window.addEventListener('app-loaded', () => {
+        console.log("✅ App ready.");
         isAppLoaded = true;
       });
 
+      // Global error listener to catch Babel or React mount failures
       window.addEventListener('error', function(e) {
-        const msg = e.message || "Unknown error";
-        if (!isAppLoaded && (msg.includes('MIME') || msg.includes('useRef') || msg.includes('React') || msg.includes('App'))) {
-          showError(msg);
+        if (!isAppLoaded) {
+          const errorMessage = e.error ? e.error.message : e.message;
+          showError(errorMessage || "Failed to resolve script dependencies.");
         }
-      }, true);
+      });
 
       function showError(msg) {
         const root = document.getElementById('root');
@@ -99,28 +100,29 @@
         root.innerHTML = `
           <div class="error-overlay">
             <div class="error-card">
-              <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px;">TEDx</h1>
-              <h2 style="color: white; margin-bottom: 20px; font-size: 24px;">Initialization Failed</h2>
-              <p style="color: #aaa; line-height: 1.6; margin-bottom: 30px;">
-                The browser could not start the application. This is usually caused by a React version conflict or a missing file on the server.
+              <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px;">TEDx</h1>
+              <h2 style="color: white; margin-bottom: 15px; font-size: 20px; font-weight: 700;">Critical Error</h2>
+              <p style="color: #888; line-height: 1.6; margin-bottom: 25px; font-size: 14px;">
+                The website failed to load. This usually happens when the browser cannot find a file or there is a version mismatch in the scripts.
               </p>
-              <div style="text-align: left; background: #000; padding: 20px; border-radius: 16px; border: 1px solid #222; font-family: monospace; font-size: 11px; color: #ef4444; overflow-x: auto;">
+              <div style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #222; font-family: monospace; font-size: 12px; color: #ef4444; overflow-x: auto; white-space: pre-wrap;">
                 <strong>Debug Info:</strong><br>${msg}
               </div>
-              <button onclick="location.reload()" style="margin-top: 30px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Reload Page</button>
+              <button onclick="location.reload()" style="margin-top: 25px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.2s;">Refresh Page</button>
             </div>
           </div>
         `;
       }
 
-      // 15s Timeout to catch stuck loading
+      // 15s Safety Timeout
       setTimeout(() => {
-        if (!isAppLoaded) {
-          showError("Loading Timeout: The browser is taking too long to transpile the code. Ensure all .tsx files are present and there are no network errors in the developer console.");
+        if (!isAppLoaded && !document.querySelector('.error-overlay')) {
+          showError("Initialization Timeout: The browser is taking too long to load scripts. Check your internet connection or the developer console (F12) for network errors.");
         }
       }, 15000);
     </script>
 
+    <!-- Entry point: Babel transpiles index.tsx and resolves relative imports -->
     <script type="text/babel" data-type="module" data-presets="react,typescript" src="./index.tsx"></script>
   </head>
   <body>
