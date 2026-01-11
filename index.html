@@ -16,54 +16,88 @@
         color: #ffffff;
         margin: 0;
         padding: 0;
+        overflow-x: hidden;
       }
       .font-arabic {
         font-family: 'Noto Sans Arabic', sans-serif;
       }
-      /* Custom TED Red */
       .bg-ted-red { background-color: #eb0028; }
       .text-ted-red { color: #eb0028; }
       .border-ted-red { border-color: #eb0028; }
       
-      /* Hide scrollbar but keep functionality */
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
       /* Initial Loading Styles */
       #root:empty {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-center;
+        justify-content: center;
         height: 100vh;
         background: black;
       }
       #root:empty::after {
         content: "TEDx";
         color: #eb0028;
-        font-size: 2rem;
+        font-size: 3rem;
         font-weight: 900;
         letter-spacing: -0.05em;
         animation: pulse 1.5s infinite;
       }
       @keyframes pulse {
         0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.95); }
+        50% { opacity: 0.3; transform: scale(0.9); }
       }
     </style>
+    
+    <!-- Error handling for local file access -->
+    <script>
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        const root = document.getElementById('root');
+        if (root && root.innerHTML === '') {
+          root.innerHTML = `
+            <div style="padding: 40px; text-align: center; max-width: 600px; margin: 10vh auto; font-family: system-ui, sans-serif;">
+              <h1 style="color: #eb0028; font-size: 48px; font-weight: 900; margin-bottom: 20px;">TEDx</h1>
+              <div style="background: #111; border: 1px solid #eb002833; padding: 30px; border-radius: 24px; text-align: left;">
+                <h2 style="color: white; margin-top: 0;">System Error</h2>
+                <p style="color: #888; line-height: 1.6;">${msg}</p>
+                <div style="margin: 20px 0; padding: 15px; background: #000; border-radius: 12px; font-size: 14px;">
+                  <p style="margin: 0; color: #55ff55;"><b>Troubleshooting:</b></p>
+                  <ol style="color: #bbb; margin: 10px 0 0 20px; padding: 0;">
+                    <li>Ensure you are running the site via <b>Live Server</b>.</li>
+                    <li>Check your internet connection (needed for React libraries).</li>
+                    <li>Try clearing your browser cache.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        return false;
+      };
+    </script>
+
     <script type="importmap">
     {
       "imports": {
-        "react/": "https://esm.sh/react@^19.2.3/",
-        "react": "https://esm.sh/react@^19.2.3",
-        "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
-        "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+        "react": "https://esm.sh/react@19.0.0",
+        "react/": "https://esm.sh/react@19.0.0/",
+        "react-dom": "https://esm.sh/react-dom@19.0.0",
+        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
+        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+        "react-router-dom": "https://esm.sh/react-router-dom@7.1.0?external=react,react-dom"
       }
     }
     </script>
     <script type="module" src="./index.tsx"></script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: black; color: white; font-family: sans-serif;">
+        <h1>Please enable JavaScript to view this site.</h1>
+      </div>
+    </noscript>
     <div id="root"></div>
   </body>
 </html>
