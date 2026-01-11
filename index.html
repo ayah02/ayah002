@@ -63,7 +63,7 @@
       }
     </style>
     
-    <!-- FIXED: Consolidated to a single React version (19.0.0) to prevent dependency conflicts -->
+    <!-- FIXED: Strictly one version of React (19.0.0) and removed conflicts -->
     <script type="importmap">
 {
   "imports": {
@@ -78,18 +78,18 @@
 </script>
 
     <script>
-      let isAppLoaded = false;
+      window.__APP_LOADED__ = false;
       const startTime = Date.now();
 
       // Listen for mount signal from index.tsx
       window.addEventListener('app-loaded', () => {
-        isAppLoaded = true;
+        window.__APP_LOADED__ = true;
         console.log("✅ TEDx Application Initialized in " + (Date.now() - startTime) + "ms");
       });
 
       // Catch standard errors and display them
       window.addEventListener('error', function(e) {
-        if (!isAppLoaded) {
+        if (!window.__APP_LOADED__) {
           const msg = e.error ? (e.error.stack || e.error.message) : e.message;
           showError(msg || "Script execution failed.");
         }
@@ -97,7 +97,7 @@
 
       // Catch module loading/promise errors
       window.addEventListener('unhandledrejection', function(e) {
-        if (!isAppLoaded) {
+        if (!window.__APP_LOADED__) {
           const msg = e.reason ? (e.reason.stack || e.reason.message || e.reason) : "A background task failed during load.";
           showError(msg);
         }
@@ -105,7 +105,7 @@
 
       function showError(msg) {
         const root = document.getElementById('root');
-        if (!root || isAppLoaded) return;
+        if (!root || window.__APP_LOADED__) return;
         
         root.innerHTML = `
           <div class="error-overlay">
@@ -124,12 +124,12 @@
         `;
       }
 
-      // 30s Timeout for slower connections and Babel transpilation
+      // 45s Timeout for slower connections and Babel transpilation
       setTimeout(() => {
-        if (!isAppLoaded && !document.querySelector('.error-overlay')) {
-          showError("Loading Timeout: The browser is taking too long to process the app. This often happens on first load or slow connections while Babel is processing files.");
+        if (!window.__APP_LOADED__ && !document.querySelector('.error-overlay')) {
+          showError("Loading Timeout: The browser is taking too long to process the app. This often happens on first load while Babel is processing files. Please try reloading.");
         }
-      }, 30000);
+      }, 45000);
     </script>
 
     <!-- Entry point: Babel transpiles index.tsx -->
