@@ -13,4 +13,7 @@ if (el) {
       <App />
     </React.StrictMode>
   );
+  
+  // Notify the parent window that we've started
+  window.dispatchEvent(new Event('app-loaded'));
 }

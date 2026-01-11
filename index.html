@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Babel: The transpiler that allows .tsx files to run in the browser -->
+    <!-- Babel: Transpiler for .tsx in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
@@ -63,7 +63,7 @@
       }
     </style>
     
-    <!-- FIXED: Consolidated Import Map (No more version conflicts) -->
+    <!-- STRICT IMPORT MAP: No conflicts allowed -->
     <script type="importmap">
 {
   "imports": {
@@ -78,11 +78,17 @@
 </script>
 
     <script>
-      // Diagnostic tool to show what's wrong if the app fails
+      let isAppLoaded = false;
+
+      // Watch for the 'app-loaded' signal from index.tsx
+      window.addEventListener('app-loaded', function() {
+        console.log("✅ App loaded signal received.");
+        isAppLoaded = true;
+      });
+
       window.addEventListener('error', function(e) {
-        // If it's a fatal React or Module error, show the diagnostic screen
         const msg = e.message || "Unknown error";
-        if (msg.includes('MIME') || msg.includes('useRef') || msg.includes('React') || msg.includes('App')) {
+        if (!isAppLoaded && (msg.includes('MIME') || msg.includes('useRef') || msg.includes('React') || msg.includes('App'))) {
           showError(msg);
         }
       }, true);
@@ -94,34 +100,27 @@
           <div class="error-overlay">
             <div class="error-card">
               <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px;">TEDx</h1>
-              <h2 style="color: white; margin-bottom: 20px; font-size: 24px;">Setup Required</h2>
+              <h2 style="color: white; margin-bottom: 20px; font-size: 24px;">Initialization Failed</h2>
               <p style="color: #aaa; line-height: 1.6; margin-bottom: 30px;">
-                The application encountered a technical issue. This usually means a React version conflict or a browser security restriction.
+                The browser could not start the application. This is usually caused by a React version conflict or a missing file on the server.
               </p>
               <div style="text-align: left; background: #000; padding: 20px; border-radius: 16px; border: 1px solid #222; font-family: monospace; font-size: 11px; color: #ef4444; overflow-x: auto;">
                 <strong>Debug Info:</strong><br>${msg}
               </div>
-              <button onclick="location.reload()" style="margin-top: 30px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Try Again</button>
+              <button onclick="location.reload()" style="margin-top: 30px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Reload Page</button>
             </div>
           </div>
         `;
       }
 
-      // 15 second timeout to catch silent failures (increased because Babel is slow)
-      const loadingTimeout = setTimeout(() => {
-        const root = document.getElementById('root');
-        if (root && root.innerHTML === '') {
-          showError("Loading Timeout: The browser is taking too long to process the scripts. This might be a slow connection or a missing file.");
+      // 15s Timeout to catch stuck loading
+      setTimeout(() => {
+        if (!isAppLoaded) {
+          showError("Loading Timeout: The browser is taking too long to transpile the code. Ensure all .tsx files are present and there are no network errors in the developer console.");
         }
       }, 15000);
-
-      // Clear timeout if React successfully mounts
-      window.addEventListener('load', () => {
-        // We'll trust React to mount. In index.tsx we can add a 'ready' signal.
-      });
     </script>
 
-    <!-- Entry point: Babel transpiles index.tsx and resolves relative imports -->
     <script type="text/babel" data-type="module" data-presets="react,typescript" src="./index.tsx"></script>
   </head>
   <body>
