@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Babel: Enables .tsx support in the browser for GitHub Pages -->
+    <!-- Babel: The transpiler that allows .tsx files to run in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
@@ -57,12 +57,13 @@
       }
       .error-card {
         max-width: 500px; width: 100%; background: #111;
-        padding: 30px; border-radius: 24px; border: 1px solid #333;
+        padding: 40px; border-radius: 32px; border: 1px solid #333;
         text-align: center; font-family: sans-serif;
+        box-shadow: 0 25px 50px -12px rgba(235, 0, 40, 0.2);
       }
     </style>
     
-    <!-- CRITICAL: Consolidated Import Map (Removed version conflicts) -->
+    <!-- Import Map: Unified version (19.0.0) to prevent React internal conflicts -->
     <script type="importmap">
 {
   "imports": {
@@ -77,13 +78,11 @@
 </script>
 
     <script>
-      // Diagnostic script to catch common loading errors
+      // Diagnostic tool to show what's wrong if the app fails
       window.addEventListener('error', function(e) {
-        var msg = e.message || (e.target && (e.target.src || e.target.href)) || "Unknown Startup Error";
-        
-        // Only show diagnostic screen for fatal module/syntax errors
-        if (typeof msg === 'string' && (msg.includes('MIME') || msg.includes('useRef') || msg.includes('index.tsx'))) {
-          showError(msg);
+        // If it's a fatal React or Module error, show the diagnostic screen
+        if (e.message && (e.message.includes('MIME') || e.message.includes('useRef') || e.message.includes('React'))) {
+          showError(e.message);
         }
       }, true);
 
@@ -93,22 +92,30 @@
         root.innerHTML = `
           <div class="error-overlay">
             <div class="error-card">
-              <h1 style="color: #eb0028; font-size: 40px; font-weight: 900; margin-bottom: 10px;">TEDx</h1>
-              <h2 style="color: white; margin-bottom: 15px;">App Initialization Error</h2>
-              <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                The browser encountered a problem loading the React components. This often happens on GitHub Pages if files are served with the wrong content type or if there's a React version mismatch.
+              <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px;">TEDx</h1>
+              <h2 style="color: white; margin-bottom: 20px; font-size: 24px;">Setup Required</h2>
+              <p style="color: #aaa; line-height: 1.6; margin-bottom: 30px;">
+                The application encountered a technical issue. This usually means a React version conflict or a browser security restriction.
               </p>
-              <div style="text-align: left; background: #000; padding: 15px; border-radius: 12px; font-family: monospace; font-size: 12px; color: #55ff55;">
-                ERROR: ${msg}
+              <div style="text-align: left; background: #000; padding: 20px; border-radius: 16px; border: 1px solid #222; font-family: monospace; font-size: 11px; color: #ef4444; overflow-x: auto;">
+                <strong>Debug Info:</strong><br>${msg}
               </div>
-              <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #eb0028; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Retry Refresh</button>
+              <button onclick="location.reload()" style="margin-top: 30px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Try Again</button>
             </div>
           </div>
         `;
       }
+
+      // 8 second timeout to catch silent failures
+      setTimeout(() => {
+        const root = document.getElementById('root');
+        if (root && root.innerHTML === '') {
+          showError("Loading Timeout: The browser blocked the module or a file is missing. Ensure all .tsx files are uploaded correctly.");
+        }
+      }, 8000);
     </script>
 
-    <!-- Configure Babel to handle TSX and React -->
+    <!-- Entry point: Babel transpiles index.tsx and resolves relative imports -->
     <script type="text/babel" data-type="module" data-presets="react,typescript" src="./index.tsx"></script>
   </head>
   <body>
