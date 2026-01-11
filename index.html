@@ -63,7 +63,7 @@
       }
     </style>
     
-    <!-- FIXED: Consolidated and Strict Import Map -->
+    <!-- FIXED: Strictly one version of React (19.0.0) -->
     <script type="importmap">
 {
   "imports": {
@@ -80,49 +80,56 @@
     <script>
       let isAppLoaded = false;
 
-      // Listen for mount signal
+      // Listen for mount signal from index.tsx
       window.addEventListener('app-loaded', () => {
-        console.log("✅ App ready.");
         isAppLoaded = true;
+        console.log("✅ TEDx Application Initialized Successfully");
       });
 
-      // Global error listener to catch Babel or React mount failures
+      // Catch standard errors
       window.addEventListener('error', function(e) {
         if (!isAppLoaded) {
-          const errorMessage = e.error ? e.error.message : e.message;
-          showError(errorMessage || "Failed to resolve script dependencies.");
+          showError(e.message || "Script execution failed.");
+        }
+      });
+
+      // Catch hidden module/promise errors
+      window.addEventListener('unhandledrejection', function(e) {
+        if (!isAppLoaded) {
+          showError(e.reason?.message || "Dependency loading failed. Check your internet connection.");
         }
       });
 
       function showError(msg) {
         const root = document.getElementById('root');
-        if (!root) return;
+        if (!root || isAppLoaded) return;
+        
         root.innerHTML = `
           <div class="error-overlay">
             <div class="error-card">
               <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px;">TEDx</h1>
-              <h2 style="color: white; margin-bottom: 15px; font-size: 20px; font-weight: 700;">Critical Error</h2>
+              <h2 style="color: white; margin-bottom: 15px; font-size: 20px; font-weight: 700;">Bootstrap Error</h2>
               <p style="color: #888; line-height: 1.6; margin-bottom: 25px; font-size: 14px;">
-                The website failed to load. This usually happens when the browser cannot find a file or there is a version mismatch in the scripts.
+                We couldn't start the application. This is often caused by a temporary network glitch or a missing component file.
               </p>
               <div style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #222; font-family: monospace; font-size: 12px; color: #ef4444; overflow-x: auto; white-space: pre-wrap;">
                 <strong>Debug Info:</strong><br>${msg}
               </div>
-              <button onclick="location.reload()" style="margin-top: 25px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.2s;">Refresh Page</button>
+              <button onclick="location.reload()" style="margin-top: 25px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Reload & Retry</button>
             </div>
           </div>
         `;
       }
 
-      // 15s Safety Timeout
+      // 15s Timeout for Babel processing
       setTimeout(() => {
         if (!isAppLoaded && !document.querySelector('.error-overlay')) {
-          showError("Initialization Timeout: The browser is taking too long to load scripts. Check your internet connection or the developer console (F12) for network errors.");
+          showError("Loading Timeout: The browser is struggling to process the application files. This could be due to a slow CPU or network connection.");
         }
       }, 15000);
     </script>
 
-    <!-- Entry point: Babel transpiles index.tsx and resolves relative imports -->
+    <!-- Entry point: Babel transpiles index.tsx -->
     <script type="text/babel" data-type="module" data-presets="react,typescript" src="./index.tsx"></script>
   </head>
   <body>
