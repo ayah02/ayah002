@@ -63,7 +63,7 @@
       }
     </style>
     
-    <!-- FIXED: Strictly one version of React (19.0.0) -->
+    <!-- FIXED: Strictly one version of React (19.0.0) and removed conflicting trailing-slash imports -->
     <script type="importmap">
 {
   "imports": {
@@ -79,24 +79,27 @@
 
     <script>
       let isAppLoaded = false;
+      const startTime = Date.now();
 
       // Listen for mount signal from index.tsx
       window.addEventListener('app-loaded', () => {
         isAppLoaded = true;
-        console.log("✅ TEDx Application Initialized Successfully");
+        console.log("✅ TEDx Application Initialized in " + (Date.now() - startTime) + "ms");
       });
 
-      // Catch standard errors
+      // Catch standard errors and display them
       window.addEventListener('error', function(e) {
         if (!isAppLoaded) {
-          showError(e.message || "Script execution failed.");
+          const msg = e.error ? e.error.stack || e.error.message : e.message;
+          showError(msg || "Unknown initialization error.");
         }
       });
 
-      // Catch hidden module/promise errors
+      // Catch module loading/promise errors
       window.addEventListener('unhandledrejection', function(e) {
         if (!isAppLoaded) {
-          showError(e.reason?.message || "Dependency loading failed. Check your internet connection.");
+          const msg = e.reason ? (e.reason.stack || e.reason.message || e.reason) : "Promise rejected during load.";
+          showError(msg);
         }
       });
 
@@ -104,16 +107,17 @@
         const root = document.getElementById('root');
         if (!root || isAppLoaded) return;
         
+        // Ensure error is visible even if styling failed
         root.innerHTML = `
           <div class="error-overlay">
             <div class="error-card">
               <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px;">TEDx</h1>
               <h2 style="color: white; margin-bottom: 15px; font-size: 20px; font-weight: 700;">Bootstrap Error</h2>
               <p style="color: #888; line-height: 1.6; margin-bottom: 25px; font-size: 14px;">
-                We couldn't start the application. This is often caused by a temporary network glitch or a missing component file.
+                The application failed to start. This is often caused by a script conflict or a network error.
               </p>
-              <div style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #222; font-family: monospace; font-size: 12px; color: #ef4444; overflow-x: auto; white-space: pre-wrap;">
-                <strong>Debug Info:</strong><br>${msg}
+              <div style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #222; font-family: monospace; font-size: 11px; color: #ef4444; overflow-x: auto; white-space: pre-wrap; max-height: 250px;">
+                <strong style="color: #fff">Debug Info:</strong><br>${msg}
               </div>
               <button onclick="location.reload()" style="margin-top: 25px; width: 100%; padding: 15px; background: #eb0028; color: white; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Reload & Retry</button>
             </div>
@@ -121,12 +125,12 @@
         `;
       }
 
-      // 15s Timeout for Babel processing
+      // 25s Timeout for slower connections
       setTimeout(() => {
         if (!isAppLoaded && !document.querySelector('.error-overlay')) {
-          showError("Loading Timeout: The browser is struggling to process the application files. This could be due to a slow CPU or network connection.");
+          showError("Loading Timeout: The browser is taking too long to process the app. Check your connection or the console (F12) for specific network errors.");
         }
-      }, 15000);
+      }, 25000);
     </script>
 
     <!-- Entry point: Babel transpiles index.tsx -->
