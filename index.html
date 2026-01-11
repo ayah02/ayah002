@@ -18,17 +18,10 @@
         padding: 0;
         overflow-x: hidden;
       }
-      .font-arabic {
-        font-family: 'Noto Sans Arabic', sans-serif;
-      }
       .bg-ted-red { background-color: #eb0028; }
       .text-ted-red { color: #eb0028; }
-      .border-ted-red { border-color: #eb0028; }
       
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-      /* Initial Loading Styles */
+      /* Pulse animation for the loading state */
       #root:empty {
         display: flex;
         flex-direction: column;
@@ -40,44 +33,28 @@
       #root:empty::after {
         content: "TEDx";
         color: #eb0028;
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 900;
         letter-spacing: -0.05em;
-        animation: pulse 1.5s infinite;
+        animation: pulse 1.5s infinite ease-in-out;
       }
       @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.3; transform: scale(0.9); }
+        0%, 100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+        50% { opacity: 0.3; transform: scale(0.9); filter: blur(2px); }
+      }
+
+      .error-overlay {
+        position: fixed;
+        inset: 0;
+        background: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 9999;
       }
     </style>
     
-    <!-- Error handling for local file access -->
-    <script>
-      window.onerror = function(msg, url, lineNo, columnNo, error) {
-        const root = document.getElementById('root');
-        if (root && root.innerHTML === '') {
-          root.innerHTML = `
-            <div style="padding: 40px; text-align: center; max-width: 600px; margin: 10vh auto; font-family: system-ui, sans-serif;">
-              <h1 style="color: #eb0028; font-size: 48px; font-weight: 900; margin-bottom: 20px;">TEDx</h1>
-              <div style="background: #111; border: 1px solid #eb002833; padding: 30px; border-radius: 24px; text-align: left;">
-                <h2 style="color: white; margin-top: 0;">System Error</h2>
-                <p style="color: #888; line-height: 1.6;">${msg}</p>
-                <div style="margin: 20px 0; padding: 15px; background: #000; border-radius: 12px; font-size: 14px;">
-                  <p style="margin: 0; color: #55ff55;"><b>Troubleshooting:</b></p>
-                  <ol style="color: #bbb; margin: 10px 0 0 20px; padding: 0;">
-                    <li>Ensure you are running the site via <b>Live Server</b>.</li>
-                    <li>Check your internet connection (needed for React libraries).</li>
-                    <li>Try clearing your browser cache.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-        return false;
-      };
-    </script>
-
     <script type="importmap">
     {
       "imports": {
@@ -86,18 +63,63 @@
         "react-dom": "https://esm.sh/react-dom@19.0.0",
         "react-dom/": "https://esm.sh/react-dom@19.0.0/",
         "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-        "react-router-dom": "https://esm.sh/react-router-dom@7.1.0?external=react,react-dom"
+        "react-router-dom": "https://esm.sh/react-router-dom@7.1.0?deps=react@19.0.0,react-dom@19.0.0"
       }
     }
     </script>
+
+    <!-- This script detects if the app fails to load -->
+    <script>
+      window.addEventListener('error', function(e) {
+        // Safe check for message existence to avoid "Cannot read properties of undefined (reading 'includes')"
+        var msg = e.message || (e.target && (e.target.src || e.target.href)) || "Unknown Error";
+        
+        if (typeof msg === 'string') {
+          // If the error happens during module loading (common for .tsx files locally) or React context issues
+          if (msg.includes('MIME type') || msg.includes('useRef') || msg.includes('index.tsx')) {
+            showError(msg);
+          }
+        }
+      }, true);
+
+      function showError(msg) {
+        const root = document.getElementById('root');
+        if (!root) return;
+        
+        root.innerHTML = `
+          <div class="error-overlay">
+            <div style="max-width: 500px; text-align: center; font-family: sans-serif;">
+              <h1 style="color: #eb0028; font-size: 50px; font-weight: 900; margin: 0;">TEDx</h1>
+              <div style="background: #111; padding: 30px; border-radius: 24px; border: 1px solid #333; margin-top: 20px;">
+                <h2 style="margin-top: 0; color: white;">App Failed to Start</h2>
+                <p style="color: #888; line-height: 1.5; font-size: 14px;">This usually happens because the browser cannot read <b>.tsx</b> files directly from a folder or there is a dependency conflict.</p>
+                <div style="text-align: left; background: #000; padding: 15px; border-radius: 12px; margin: 20px 0;">
+                  <p style="color: #55ff55; margin: 0 0 10px 0; font-weight: bold;">How to fix:</p>
+                  <ol style="color: #bbb; margin: 0; padding-left: 20px; font-size: 13px;">
+                    <li>Ensure you are using a <b>Local Web Server</b> (like VS Code Live Server).</li>
+                    <li>Ensure you have a stable internet connection.</li>
+                    <li>Check if the file <code>index.tsx</code> exists in the same folder.</li>
+                  </ol>
+                </div>
+                <p style="font-size: 10px; color: #444; word-break: break-all;">Technical Detail: ${msg}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Check for timeout (if pulsing for more than 8 seconds, something is likely blocked)
+      setTimeout(() => {
+        const root = document.getElementById('root');
+        if (root && root.innerHTML === '') {
+          showError("Loading timeout: The app is taking too long to initialize. Check console for details.");
+        }
+      }, 8000);
+    </script>
+
     <script type="module" src="./index.tsx"></script>
   </head>
   <body>
-    <noscript>
-      <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: black; color: white; font-family: sans-serif;">
-        <h1>Please enable JavaScript to view this site.</h1>
-      </div>
-    </noscript>
     <div id="root"></div>
   </body>
 </html>
